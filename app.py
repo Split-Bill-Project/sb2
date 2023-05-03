@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 from split import *
 
 
-table_name = ""
 member_names = []
 
 
@@ -35,6 +34,7 @@ def split_expense_show_group():
 
 @app.route('/show_member', methods=['GET','POST'])
 def show_member():
+    global table_name 
     if request.method == 'POST':
         table_name = request.form['group']
         print(table_name)
@@ -46,13 +46,14 @@ def show_member():
 @app.route('/split_expense_result',methods = ['GET','POST'])
 def split_result():
     if request.method == 'POST':
-        split_member_names = request.form.getlist('member[]')
-        amount = int(request.form('amount'))
-        expence_name = request.form('expence_name')
-        paidby = request.form('paidby')
+        split_member_names = list(request.form.getlist('member'))
+        amount = int(request.form['amount'])
+        expence_name = request.form['expence_name']
+        paidby = request.form['paidby']
+        print(table_name,split_member_names,amount,expence_name,paidby)
         # choice = 
     split_an_expense(table_name,split_member_names,amount,expence_name,paidby)
-    return render_template("split_result.html")
+    return render_template("split_expense_result.html")
 
 
 
@@ -73,6 +74,33 @@ def create_group_result():
         createGroup(table_name,member_names)
     return render_template("create_group_result.html")
 
+
+
+
+@app.route('/genrate_bill_show_group')
+def split_expense_show_group():
+    group_names = show_group_name()
+
+    return render_template('select_group_for_bill_set.html', groups=group_names)
+    # return render_template("select_group.html")
+    # return render_template("split_an_expense.html")
+
+@app.route('/show_member_for_bill_set', methods=['GET','POST'])
+def show_member():
+    global table_name 
+    if request.method == 'POST':
+        table_name = request.form['group']
+    member_names = show_column_name(table_name)
+    return render_template("show_member_for_bill_set.html",members = member_names)
+
+
+@app.route('/genrate_bill_result',methods = ['GET','POST'])
+def genrate_bill_result():
+    if request.method == 'POST':
+        split_member_names = list(request.form.getlist('member'))
+        
+    result = bill_settalment(table_name,split_member_names)
+    return render_template("genrate_bill_result.html",result = result)
 
 
 @app.route('/genrate_bill',methods = ['GET','POST'])

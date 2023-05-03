@@ -31,7 +31,7 @@
                   <!--Form Section-->
                   <br /><br />
                   <h2 style="text-align: center; margin: 0px; color: rgb(9, 8, 8)">
-                    <b>Select Members Name </b>
+                    <b>Genrate Bill </b>
                   </h2>
                   <br />
                   
@@ -49,23 +49,12 @@
                   <!--Form Section-->
                   <br /><br />  
                   <h1>Members Names</h1>
-                  <form method="POST" action="/split_expense_result">
-                    {% for member in members %}
-
-                        <input type="checkbox" name="member" value="{{ member }}">{{ member[0] }}<br>
-
-                        
-                    {% endfor %}
-                    <br>
-                    <h1>Paid By</h1>
+                  <form method="POST" action="/genrate_bill_result">
+                    <h1>Select Member Name</h1>
                     {% for member in members %}
                         <input type="radio" name="paidby" value="{{ member }}">{{ member[0] }}<br>
                     {% endfor %}
-                    <label for="amount">Enter Amount:</label>
-                    <input type="number" id="amount" name="amount" required>
-                        <br /><br /> 
-                    <label for="expence_name">Enter Expence Name :</label>
-                    <input type="text" name="expence_name" id="expence_name"><br>
+                    
                     <input type="submit" value="Submit">
                 </form>
 

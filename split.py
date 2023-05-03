@@ -1,8 +1,6 @@
 import mysql.connector
 import pandas as pd
 
-
-table_name = ""
 # Establish a connection to the database
 db = mysql.connector.connect(
     host="localhost",
@@ -71,7 +69,7 @@ def show_all_gr_trans():
     print(i)
   
 
-def split_an_expense(group_name,split_member_names,amount,expence_name,paidby):
+def split_an_expense(table_name,split_member_names,amount,expence_name,paidby):
   # show_group_name()
   # group_name = input("Enter the group name : ")
   # amount = float(input("Total  amount of expences: "))
@@ -96,10 +94,10 @@ def split_an_expense(group_name,split_member_names,amount,expence_name,paidby):
   # if choice == 0:
   member_count = len(split_member_names)
   equal_split = round(amount/member_count,2)
-  query = "INSERT INTO " + group_name + " ( Expence_name, PaidBy, "
+  query = "INSERT INTO " + table_name + " ( Expence_name, PaidBy, "
   for i in range(member_count-1):
-    query = query + split_member_names[i] + ","
-  query = query + split_member_names[-1]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby+"'" +","
+    query = query + split_member_names[i][2:(len(split_member_names[i])-3)] + ","
+  query = query + split_member_names[-1][2:(len(split_member_names[-1])-3)]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby[2:(len(split_member_names[0])-3)]+"'" +","
   print(equal_split)
   print(query)
   for k in range(member_count-1):
@@ -177,66 +175,100 @@ def remove_transaction():
   db.commit()
   print("Transaction successfully removed")
 
+def bill_settalment(table_name):
+  # show_group_name()
+  # choice = input("Enter the group name That Bill you want to genrate : ")
+  df = pd.read_sql('SELECT * FROM '+table_name, con=db)
+  member_list = list(df.columns)
+  member_list = member_list[2:]
+  # print(member_list)
+  # print(df)
+  # print("select any member that transaction history you want to see : ")
+  count = 1
+  for i in member_list:
+    print("Enter ",count," for",i)
+    count=count+1
+  selected_member_index = int(input("Enter your choice --> "))
+  
+  selected_member_name =  member_list[selected_member_index]
 
 
-def bill_settlement():
-  show_group_name()
-  choice = input("Enter the group name that Bill you want to genrate : ")
-  df = pd.read_sql('SELECT * FROM '+choice, con=db)
-  df = df.drop(['Trans_id','Expence_name'],axis=1)
-  column_names = df.columns.tolist()
-  column_names.sort(key=lambda x: x[0])
-  first_column_values = column_names[1:]
-  data = {column_names[0]: first_column_values}
-  df_calculation = pd.DataFrame(data)
-  for i in column_names[1:]:
-    df_calculation[i] = pd.Series(dtype=float)
-  count=1
-  for i in range(1,len(column_names)):
-    df_member = df.groupby('PaidBy')[column_names[i]].sum()
-    for j in range(len(column_names)-1):
-      df_calculation.iloc[j,count]=df_member[j]
-    count+=1
-  for i in range(len(column_names)-1):
-    df_calculation.iloc[i,i+1]=0
-  for i in range(len(column_names)-1):
-    for j in range(1,len(column_names)-1):
-      if df_calculation.iloc[j,i+1] == df_calculation.iloc[i,j+1]:
-        df_calculation.iloc[j,i+1]= 0
-        df_calculation.iloc[i,j+1] = 0
-      elif df_calculation.iloc[j,i+1] > df_calculation.iloc[i,j+1]:
-        df_calculation.iloc[j,i+1] = df_calculation.iloc[j,i+1] - df_calculation.iloc[i,j+1]
-        df_calculation.iloc[i,j+1] = 0
-      else:
-        df_calculation.iloc[i,j+1] = df_calculation.iloc[i,j+1] - df_calculation.iloc[j,i+1]
-        df_calculation.iloc[j,i+1] = 0
-  stacked_df = df_calculation.set_index('PaidBy').stack().reset_index()
-  filtered_df = stacked_df.loc[stacked_df[0] != 0]
-  filtered_df.columns = ['Payee', 'Payer', 'Amount']
-  print("Press 0 to show all split expences or 1 for see indivisual member result : ",end="")
-  split_member_choice = int(input())
-  if split_member_choice == 0:
-    print(filtered_df)
-  else:
-    query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+choice+"' ORDER BY ORDINAL_POSITION;"
-    cursor.execute(query)
-    results = cursor.fetchall()
-    clean_lst = [x[0] for x in results[3:]]
-    print(clean_lst)
-    member = input("Enter the member name whose expence want to see : ")
-    print(" Owe to you :-")
-    filtered_payee_df = filtered_df[filtered_df['Payee'] == member]
-    if filtered_payee_df.empty:
-      print("No transcation to show")
-    else:
-      print(filtered_payee_df)
-    print()
-    print(" Owe by you :-")
-    filtered_payer_df = filtered_df[filtered_df['Payer'] == member]
-    if filtered_payer_df.empty:
-      print("No transcation to show")
-    else:
-      print(filtered_payer_df)
+  df1 = df.groupby('PaidBy').sum()
+  print(df1)
+  sorted_name = member_list.sort()
+  df1['name'] = sorted_name
+  df1
+  remaning_member_list = member_list.remove(selected_member_name)
+ 
+ 
+#  start from here
+ 
+  print(remaning_member_list)
+  for i in remaning_member_list:
+    result = float(df1[df1['name']==selected_member_name][i])-float(df1[df1['name']== i][selected_member_name])
+    if result < 0:
+      print(selected_member_name,"need to give ",abs(result),"amount to ",i)
+    elif result>0:
+      print(selected_member_name,"need to take ",abs(result),"amount to ",i)
+
+# def bill_settlement():
+#   show_group_name()
+#   choice = input("Enter the group name that Bill you want to genrate : ")
+#   df = pd.read_sql('SELECT * FROM '+choice, con=db)
+#   df = df.drop(['Trans_id','Expence_name'],axis=1)
+#   column_names = df.columns.tolist()
+#   column_names.sort(key=lambda x: x[0])
+#   first_column_values = column_names[1:]
+#   data = {column_names[0]: first_column_values}
+#   df_calculation = pd.DataFrame(data)
+#   for i in column_names[1:]:
+#     df_calculation[i] = pd.Series(dtype=float)
+#   count=1
+#   for i in range(1,len(column_names)):
+#     df_member = df.groupby('PaidBy')[column_names[i]].sum()
+#     for j in range(len(column_names)-1):
+#       df_calculation.iloc[j,count]=df_member[j]
+#     count+=1
+#   for i in range(len(column_names)-1):
+#     df_calculation.iloc[i,i+1]=0
+#   for i in range(len(column_names)-1):
+#     for j in range(1,len(column_names)-1):
+#       if df_calculation.iloc[j,i+1] == df_calculation.iloc[i,j+1]:
+#         df_calculation.iloc[j,i+1]= 0
+#         df_calculation.iloc[i,j+1] = 0
+#       elif df_calculation.iloc[j,i+1] > df_calculation.iloc[i,j+1]:
+#         df_calculation.iloc[j,i+1] = df_calculation.iloc[j,i+1] - df_calculation.iloc[i,j+1]
+#         df_calculation.iloc[i,j+1] = 0
+#       else:
+#         df_calculation.iloc[i,j+1] = df_calculation.iloc[i,j+1] - df_calculation.iloc[j,i+1]
+#         df_calculation.iloc[j,i+1] = 0
+#   stacked_df = df_calculation.set_index('PaidBy').stack().reset_index()
+#   filtered_df = stacked_df.loc[stacked_df[0] != 0]
+#   filtered_df.columns = ['Payee', 'Payer', 'Amount']
+#   print("Press 0 to show all split expences or 1 for see indivisual member result : ",end="")
+#   split_member_choice = int(input())
+#   if split_member_choice == 0:
+#     print(filtered_df)
+#   else:
+#     query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+choice+"' ORDER BY ORDINAL_POSITION;"
+#     cursor.execute(query)
+#     results = cursor.fetchall()
+#     clean_lst = [x[0] for x in results[3:]]
+#     print(clean_lst)
+#     member = input("Enter the member name whose expence want to see : ")
+#     print(" Owe to you :-")
+#     filtered_payee_df = filtered_df[filtered_df['Payee'] == member]
+#     if filtered_payee_df.empty:
+#       print("No transcation to show")
+#     else:
+#       print(filtered_payee_df)
+#     print()
+#     print(" Owe by you :-")
+#     filtered_payer_df = filtered_df[filtered_df['Payer'] == member]
+#     if filtered_payer_df.empty:
+#       print("No transcation to show")
+#     else:
+#       print(filtered_payer_df)
 
   
 

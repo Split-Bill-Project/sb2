@@ -51,7 +51,7 @@
                   <h1>Group Names</h1>
                   <form method="POST" action="/show_member">
                     {% for group in groups %}
-                        <input type="radio" name="group" value="{{ group[0] }}">{{ group[0] }}<br>
+                        <input type="radio" name="group" value="{{ group }}">{{ group[0] }}<br>
                     {% endfor %}
                     <br>
                     <input type="submit" value="Submit">
