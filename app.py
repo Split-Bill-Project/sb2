@@ -78,7 +78,7 @@ def create_group_result():
 
 
 @app.route('/genrate_bill_show_group')
-def split_expense_show_group():
+def genrate_bill_show_group():
     group_names = show_group_name()
 
     return render_template('select_group_for_bill_set.html', groups=group_names)
@@ -86,7 +86,7 @@ def split_expense_show_group():
     # return render_template("split_an_expense.html")
 
 @app.route('/show_member_for_bill_set', methods=['GET','POST'])
-def show_member():
+def show_member_for_bill_set():
     global table_name 
     if request.method == 'POST':
         table_name = request.form['group']
@@ -99,8 +99,8 @@ def genrate_bill_result():
     if request.method == 'POST':
         split_member_names = list(request.form.getlist('member'))
         
-    result = bill_settalment(table_name,split_member_names)
-    return render_template("genrate_bill_result.html",result = result)
+    results = bill_settalment(table_name,split_member_names)
+    return render_template("genrate_bill_result.html",results = results,member_names = member_names)
 
 
 @app.route('/genrate_bill',methods = ['GET','POST'])

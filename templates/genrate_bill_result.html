@@ -32,7 +32,7 @@
                   <!--Form Section-->
                   <br /><br />
                   <h2 style="text-align: center; margin: 0px; color: rgb(9, 8, 8)">
-                    <b>Creat New Group </b>
+                    <b>Your Bill  </b>
                   </h2>
                   <br />
                   
@@ -47,7 +47,11 @@
                     "
                   >
                   <br /><br />  
-                    <h1>Your Entry is Successfully Entered .....</h1>
+                    
+
+                    {% for member,result in member_names,results %}
+                      <h2>{{ member[0]}}  {{result[0]}}  </h2><br>
+                    {% endfor %}
                   </div>
 
         </div>

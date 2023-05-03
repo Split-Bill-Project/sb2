@@ -178,6 +178,7 @@ def remove_transaction():
 def bill_settalment(table_name):
   # show_group_name()
   # choice = input("Enter the group name That Bill you want to genrate : ")
+  results = []
   df = pd.read_sql('SELECT * FROM '+table_name, con=db)
   member_list = list(df.columns)
   member_list = member_list[2:]
@@ -206,10 +207,12 @@ def bill_settalment(table_name):
   print(remaning_member_list)
   for i in remaning_member_list:
     result = float(df1[df1['name']==selected_member_name][i])-float(df1[df1['name']== i][selected_member_name])
-    if result < 0:
-      print(selected_member_name,"need to give ",abs(result),"amount to ",i)
-    elif result>0:
-      print(selected_member_name,"need to take ",abs(result),"amount to ",i)
+    results.append(result)
+    # if result < 0:
+    #   print(selected_member_name,"need to give ",abs(result),"amount to ",i)
+    # elif result>0:
+    #   print(selected_member_name,"need to take ",abs(result),"amount to ",i)
+    return results
 
 # def bill_settlement():
 #   show_group_name()
