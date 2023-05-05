@@ -69,7 +69,9 @@ def show_all_gr_trans():
     print(i)
   
 
-def split_an_expense(table_name,split_member_names,amount,expence_name,paidby):
+def split_an_expense(table_name,split_member_names,amount,expence_name,paidby,choice,cos_amount):
+  member_count = len(split_member_names)
+  
   # show_group_name()
   # group_name = input("Enter the group name : ")
   # amount = float(input("Total  amount of expences: "))
@@ -91,34 +93,35 @@ def split_an_expense(table_name,split_member_names,amount,expence_name,paidby):
   #   split_between_names.append(input(":-> "))  
   # paidby = input("Enter name of who paid Bill : ")
   # choice = int(input("Select 0 for equal split or 1 for customize split : "))
-  # if choice == 0:
-  member_count = len(split_member_names)
-  equal_split = round(amount/member_count,2)
-  query = "INSERT INTO " + table_name + " ( Expence_name, PaidBy, "
-  for i in range(member_count-1):
-    query = query + split_member_names[i][2:(len(split_member_names[i])-3)] + ","
-  query = query + split_member_names[-1][2:(len(split_member_names[-1])-3)]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby[2:(len(split_member_names[0])-3)]+"'" +","
-  print(equal_split)
-  print(query)
-  for k in range(member_count-1):
-    query = query + str(equal_split) + "," 
-  query = query + str(equal_split) + ");"
-  print(query)
-  # elif choice == 1:
-  #   for member in split_between_names:
-  #     print(member," : ",end="")
-  #     amount=float(input())
-  #     member_amount.append(amount)
-  #   query = "INSERT INTO " + group_name + " ( PaidBy, "
-  #   for i in range(member_count-1):
-  #     query = query + split_between_names[i] + ","
-  #   query = query + split_between_names[-1]+")"+ " VALUE(" +"'"+ paidby+"'" +","
-  #   print(member_amount)
-  #   print(query)
-  #   for k in range(len(member_amount)-1):
-  #     query = query + str(member_amount[k]) + ","
-  #   query = query + str(member_amount[len(member_amount)-1]) + ");"
-  #   print(query)
+  if choice == 'equal_split':
+    
+    equal_split = round(amount/member_count,2)
+    query = "INSERT INTO " + table_name[2:len(table_name)-3] + " ( Expence_name, PaidBy, "
+    for i in range(member_count-1):
+      query = query + split_member_names[i][2:(len(split_member_names[i])-3)] + ","
+    query = query + split_member_names[-1][2:(len(split_member_names[-1])-3)]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby[2:(len(paidby)-3)]+"'" +","
+    print(equal_split)
+    print(query)
+    for k in range(member_count-1):
+      query = query + str(equal_split) + "," 
+    query = query + str(equal_split) + ");"
+    print(query)
+  elif choice == 'customize_split' :
+    print("ook")
+    # for member in split_member_names:
+    #   print(member," : ",end="")
+    #   amount=float(input())
+    #   member_amount.append(amount)
+    query = "INSERT INTO " + table_name[2:len(table_name)-3] + " ( PaidBy, "
+    for i in range(member_count-1):
+      query = query + split_member_names[i][2:(len(split_member_names[i])-3)] + ","
+    query = query + split_member_names[-1][2:(len(split_member_names[-1])-3)]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby[2:(len(paidby)-3)]+"'" +","
+    print(equal_split)
+    print(query)
+    for k in range(len(cos_amount)-1):
+      query = query + str(cos_amount[k]) + ","
+    query = query + str(cos_amount[len(cos_amount)-1]) + ");"
+    print(query)
     
   cursor.execute(query)
   db.commit()

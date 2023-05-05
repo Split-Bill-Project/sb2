@@ -37,9 +37,9 @@ def show_member():
     global table_name 
     if request.method == 'POST':
         table_name = request.form['group']
-        print(table_name)
-    member_names = show_column_name(table_name)
-    print(member_names)
+        #print(table_name[2:len(table_name)-3])
+    member_names = show_column_name(table_name[2:len(table_name)-3])
+    #print(member_names)
     return render_template("show_member.html",members = member_names)
 
 
@@ -50,9 +50,12 @@ def split_result():
         amount = int(request.form['amount'])
         expence_name = request.form['expence_name']
         paidby = request.form['paidby']
-        print(table_name,split_member_names,amount,expence_name,paidby)
-        # choice = 
-    split_an_expense(table_name,split_member_names,amount,expence_name,paidby)
+        choice = request.form['split']
+        cos_amount = request.form.getlist('cos_amount')
+
+        print(table_name,split_member_names,amount,expence_name,paidby,choice,cos_amount)
+        
+    split_an_expense(table_name,split_member_names,expence_name,amount,paidby,choice,cos_amount)
     return render_template("split_expense_result.html")
 
 
@@ -70,7 +73,7 @@ def create_group():
 def create_group_result():
     if request.method == 'POST':
         table_name = request.form['groupName']
-        member_names = request.form.getlist['member[]']
+        member_names = request.form.getlist('member[]')
         createGroup(table_name,member_names)
     return render_template("create_group_result.html")
 

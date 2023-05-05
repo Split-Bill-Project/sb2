@@ -50,24 +50,54 @@
                   <br /><br />  
                   <h1>Members Names</h1>
                   <form method="POST" action="/split_expense_result">
-                    {% for member in members %}
+                      {% for member in members %}
 
-                        <input type="checkbox" name="member" value="{{ member }}">{{ member[0] }}<br>
+                          <input type="checkbox" name="member" value="{{ member }}">{{ member[0] }}<br>
 
-                        
-                    {% endfor %}
-                    <br>
-                    <h1>Paid By</h1>
-                    {% for member in members %}
-                        <input type="radio" name="paidby" value="{{ member }}">{{ member[0] }}<br>
-                    {% endfor %}
-                    <label for="amount">Enter Amount:</label>
-                    <input type="number" id="amount" name="amount" required>
-                        <br /><br /> 
-                    <label for="expence_name">Enter Expence Name :</label>
-                    <input type="text" name="expence_name" id="expence_name"><br>
-                    <input type="submit" value="Submit">
-                </form>
+                          
+                      {% endfor %}
+                      <br>
+                      <h1>Paid By</h1>
+                      {% for member in members %}
+                          <input type="radio" name="paidby" value="{{ member }}">{{ member[0] }}<br>
+                      {% endfor %}
+                      <label for="expence_name">Enter Expence Name :</label>
+                      <input type="text" name="expence_name" id="expence_name"><br>
+                      <label for="amount">Enter Amount:</label>
+                      <input type="number" id="amount" name="amount" required>
+                          <br /><br /> 
+                          <label>
+                            <input type="radio" name="split" value="equal_split" checked>Equal split
+                          </label>
+                          <label>
+                            <input type="radio" name="split" value="customize_split">Customize Split
+                          </label><br>
+                          
+                          <div id="customize-section" style="display: none;">
+                            <h2>Customize Split</h2>
+                            <p>Enter the amount paid by each member:</p>
+                            {% for member in members %}
+                              <label for="amount-{{ member[0] }}">{{ member[0] }}:</label>
+                              <input type="number" id="amount-{{ member[0] }}" name="cos_amounts[]" value="0" min="0"><br>
+                            {% endfor %}
+                          </div>
+                          
+                      
+                      <input type="submit" value="Submit">
+                    </form>
+
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                      $(document).ready(function() {
+                        $('input[name="split"]').change(function() {
+                          if ($(this).val() === 'customize_split') {
+                            $('#customize-section').show();
+                          } else {
+                            $('#customize-section').hide();
+                          }
+                        });
+                      });
+                    </script>
 
             </div>
 
