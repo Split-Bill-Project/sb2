@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request
 from split import *
 
-
 member_names = []
-
 
 db = mysql.connector.connect(
     host="localhost",
@@ -15,8 +13,6 @@ db = mysql.connector.connect(
 # Create a cursor object
 cursor = db.cursor()
 
-
-
 app = Flask(__name__)
 
 @app.route("/")
@@ -27,19 +23,15 @@ def home():
 @app.route('/split_expense_show_group')
 def split_expense_show_group():
     group_names = show_group_name()
-
     return render_template('select_group.html', groups=group_names)
-    # return render_template("select_group.html")
-    # return render_template("split_an_expense.html")
+    
 
 @app.route('/show_member', methods=['GET','POST'])
 def show_member():
     global table_name 
     if request.method == 'POST':
         table_name = request.form['group']
-        #print(table_name[2:len(table_name)-3])
     member_names = show_column_name(table_name[2:len(table_name)-3])
-    #print(member_names)
     return render_template("show_member.html",members = member_names)
 
 
@@ -51,22 +43,16 @@ def split_result():
         expence_name = request.form['expence_name']
         paidby = request.form['paidby']
         choice = request.form['split']
-        cos_amount = request.form.getlist('cos_amount')
-
+        cos_amount = list(request.form.getlist('cos_amount'))
         print(table_name,split_member_names,amount,expence_name,paidby,choice,cos_amount)
         
-    split_an_expense(table_name,split_member_names,expence_name,amount,paidby,choice,cos_amount)
+    split_an_expense(table_name,split_member_names,amount,expence_name,paidby,choice,cos_amount)
     return render_template("split_expense_result.html")
 
 
 
 @app.route('/create_group',methods = ['GET','POST'])
 def create_group():
-    # if request.method == 'POST':
-    #     table_name = request.form['groupName']
-    #     member_names = request.form['member[]']
-    #     create_group(table_name,member_names)
-    #     print(table_name)  
     return render_template("create_group.html")
 
 @app.route('/create_group_result',methods = ['GET','POST'])
@@ -80,59 +66,39 @@ def create_group_result():
 
 
 
-@app.route('/genrate_bill_show_group')
-def genrate_bill_show_group():
-    group_names = show_group_name()
-
-    return render_template('select_group_for_bill_set.html', groups=group_names)
-    # return render_template("select_group.html")
-    # return render_template("split_an_expense.html")
-
-@app.route('/show_member_for_bill_set', methods=['GET','POST'])
-def show_member_for_bill_set():
-    global table_name 
-    if request.method == 'POST':
-        table_name = request.form['group']
-    member_names = show_column_name(table_name)
-    return render_template("show_member_for_bill_set.html",members = member_names)
-
-
-@app.route('/genrate_bill_result',methods = ['GET','POST'])
-def genrate_bill_result():
-    if request.method == 'POST':
-        split_member_names = list(request.form.getlist('member'))
-        
-    results = bill_settalment(table_name,split_member_names)
-    return render_template("genrate_bill_result.html",results = results,member_names = member_names)
-
-
 @app.route('/genrate_bill',methods = ['GET','POST'])
 def genrate_bill():
-    return render_template("genrate_bill.html")
-
-
-
-
-# @app.route('/', methods=['GET', 'POST'])
-# def index():
-#     if request.method == 'POST':
-#         # Get form data
-#         total = float(request.form['total'])
-#         num_people = int(request.form['num_people'])
-        
-#         # Calculate split amount
-#         split_amount = round(total / num_people, 2)
-        
-#         # Render template with results
-#         return render_template('result.html', split_amount=split_amount)
+    group_names = show_group_name()
+    return render_template('select_group_for_bill_set.html', groups=group_names)
     
-#     # Render index template
-#     return render_template('index.html')
+
+@app.route('/select_split_choice',methods = ['GET','POST'])
+def select_split_choice():
+    if request.method == 'POST':
+        table_name = request.form['group']
+    group_name = table_name[2:len(table_name)-3]
+    member_names = show_column_name(table_name[2:len(table_name)-3])
+    return render_template('select_split_choice.html',members = member_names,group = group_name)
+
+
+@app.route('/show_group_split', methods=['GET','POST'])
+def show_group_split():
+    if request.method == 'POST':
+        split_type = request.form['split_type']
+        table_name = request.form['group']
+        member_name = request.form.get('member')
+
+        if split_type == 'all_split' :
+            results = all_bill_settlement(table_name)
+            return render_template('all_split_result.html',result = results)
+        else:
+            results = individual_bill_settlement(table_name,member_name)
+            return render_template('individual_split_result.html',result1 = results[0], result2 = results[1])
+
+    return render_template('show_group_split.html')
+
 
 
 if __name__ == '__main__':
- 
-    # run() method of Flask class runs the application
-    # on the local development server.
     app.run()
     cursor.close()

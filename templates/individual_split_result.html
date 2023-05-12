@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Take image</title>
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-    />
+    <title>Split Bill</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
 
@@ -26,38 +24,38 @@
             <div class="content">
                 <style>
                     html body {
-                      background-color: rgb(206, 206, 228);
+                        background-color: rgb(206, 206, 228);
                     }
-                  </style>
-                  <!--Form Section-->
-                  <br /><br />
-                  <h2 style="text-align: center; margin: 0px; color: rgb(9, 8, 8)">
-                    <b>Your Bill  </b>
-                  </h2>
-                  <br />
-                  
-                  <div
-                    style="
+                </style>
+                <!--Form Section-->
+                <br /><br />
+                <h2 style="text-align: center; margin: 0px; color: rgb(9, 8, 8)">
+                    <b> </b>
+                </h2>
+                <br />
+
+                <div style="
                       width: 350px;
                       height: 40rem;
                       margin: 0px auto;
                       color: rgb(216, 181, 8);
                       border-radius: 25px;
                       padding: 10px 10px;
-                    "
-                  >
-                  <br /><br />  
-                    
+                    ">
 
-                    {% for member,result in member_names,results %}
-                      <h2>{{ member[0]}}  {{result[0]}}  </h2><br>
-                    {% endfor %}
-                  </div>
+                    <!--Form Section-->
+                    <br /><br />
+                    <h1>Select choice for split</h1>
 
-        </div>
-    </div>
-     
-</body>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Dataframe Example</title>
+                    </head>
+
+                    <body>
+                        {{ result1 | safe }}
+
+                        {{ result2 | safe }}
+                    </body>
 
 </html>
-

@@ -94,38 +94,36 @@ def split_an_expense(table_name,split_member_names,amount,expence_name,paidby,ch
   # paidby = input("Enter name of who paid Bill : ")
   # choice = int(input("Select 0 for equal split or 1 for customize split : "))
   if choice == 'equal_split':
-    
-    equal_split = round(amount/member_count,2)
+    equal_split = round(int(amount)/member_count,2)
     query = "INSERT INTO " + table_name[2:len(table_name)-3] + " ( Expence_name, PaidBy, "
     for i in range(member_count-1):
       query = query + split_member_names[i][2:(len(split_member_names[i])-3)] + ","
     query = query + split_member_names[-1][2:(len(split_member_names[-1])-3)]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby[2:(len(paidby)-3)]+"'" +","
-    print(equal_split)
-    print(query)
     for k in range(member_count-1):
       query = query + str(equal_split) + "," 
     query = query + str(equal_split) + ");"
-    print(query)
   elif choice == 'customize_split' :
-    print("ook")
     # for member in split_member_names:
     #   print(member," : ",end="")
     #   amount=float(input())
     #   member_amount.append(amount)
-    query = "INSERT INTO " + table_name[2:len(table_name)-3] + " ( PaidBy, "
+    query = "INSERT INTO " + table_name[2:len(table_name)-3] + " ( Expence_name, PaidBy, "
     for i in range(member_count-1):
       query = query + split_member_names[i][2:(len(split_member_names[i])-3)] + ","
     query = query + split_member_names[-1][2:(len(split_member_names[-1])-3)]+")"+ " VALUE("+"'"+expence_name+"'," +"'"+ paidby[2:(len(paidby)-3)]+"'" +","
-    print(equal_split)
-    print(query)
-    for k in range(len(cos_amount)-1):
-      query = query + str(cos_amount[k]) + ","
-    query = query + str(cos_amount[len(cos_amount)-1]) + ");"
-    print(query)
+    new_cos_amount = []
+    for value in cos_amount:
+      if value != 0:
+        new_cos_amount.append(value)
+    
+    for k in range(len(new_cos_amount)-1):
+      query = query + str(new_cos_amount[k]) + ","
+    
+    query = query + str(cos_amount[len(new_cos_amount)-1]) + ");"
     
   cursor.execute(query)
   db.commit()
-  print("value added !")
+
 
 
 
@@ -178,103 +176,118 @@ def remove_transaction():
   db.commit()
   print("Transaction successfully removed")
 
-def bill_settalment(table_name):
-  # show_group_name()
-  # choice = input("Enter the group name That Bill you want to genrate : ")
-  results = []
-  df = pd.read_sql('SELECT * FROM '+table_name, con=db)
-  member_list = list(df.columns)
-  member_list = member_list[2:]
-  # print(member_list)
-  # print(df)
-  # print("select any member that transaction history you want to see : ")
-  count = 1
-  for i in member_list:
-    print("Enter ",count," for",i)
-    count=count+1
-  selected_member_index = int(input("Enter your choice --> "))
+# def bill_settalment(table_name):
+#   # show_group_name()
+#   # choice = input("Enter the group name That Bill you want to genrate : ")
+#   results = []
+#   df = pd.read_sql('SELECT * FROM '+table_name, con=db)
+#   member_list = list(df.columns)
+#   member_list = member_list[2:]
+#   # print(member_list)
+#   # print(df)
+#   # print("select any member that transaction history you want to see : ")
+#   count = 1
+#   for i in member_list:
+#     print("Enter ",count," for",i)
+#     count=count+1
+#   selected_member_index = int(input("Enter your choice --> "))
   
-  selected_member_name =  member_list[selected_member_index]
+#   selected_member_name =  member_list[selected_member_index]
 
 
-  df1 = df.groupby('PaidBy').sum()
-  print(df1)
-  sorted_name = member_list.sort()
-  df1['name'] = sorted_name
-  df1
-  remaning_member_list = member_list.remove(selected_member_name)
+#   df1 = df.groupby('PaidBy').sum()
+#   print(df1)
+#   sorted_name = member_list.sort()
+#   df1['name'] = sorted_name
+#   df1
+#   remaning_member_list = member_list.remove(selected_member_name)
  
  
-#  start from here
+# #  start from here
  
-  print(remaning_member_list)
-  for i in remaning_member_list:
-    result = float(df1[df1['name']==selected_member_name][i])-float(df1[df1['name']== i][selected_member_name])
-    results.append(result)
-    # if result < 0:
-    #   print(selected_member_name,"need to give ",abs(result),"amount to ",i)
-    # elif result>0:
-    #   print(selected_member_name,"need to take ",abs(result),"amount to ",i)
-    return results
+#   print(remaning_member_list)
+#   for i in remaning_member_list:
+#     result = float(df1[df1['name']==selected_member_name][i])-float(df1[df1['name']== i][selected_member_name])
+#     results.append(result)
+#     # if result < 0:
+#     #   print(selected_member_name,"need to give ",abs(result),"amount to ",i)
+#     # elif result>0:
+#     #   print(selected_member_name,"need to take ",abs(result),"amount to ",i)
+#     return results
 
-# def bill_settlement():
-#   show_group_name()
-#   choice = input("Enter the group name that Bill you want to genrate : ")
-#   df = pd.read_sql('SELECT * FROM '+choice, con=db)
-#   df = df.drop(['Trans_id','Expence_name'],axis=1)
-#   column_names = df.columns.tolist()
-#   column_names.sort(key=lambda x: x[0])
-#   first_column_values = column_names[1:]
-#   data = {column_names[0]: first_column_values}
-#   df_calculation = pd.DataFrame(data)
-#   for i in column_names[1:]:
-#     df_calculation[i] = pd.Series(dtype=float)
-#   count=1
-#   for i in range(1,len(column_names)):
-#     df_member = df.groupby('PaidBy')[column_names[i]].sum()
-#     for j in range(len(column_names)-1):
-#       df_calculation.iloc[j,count]=df_member[j]
-#     count+=1
-#   for i in range(len(column_names)-1):
-#     df_calculation.iloc[i,i+1]=0
-#   for i in range(len(column_names)-1):
-#     for j in range(1,len(column_names)-1):
-#       if df_calculation.iloc[j,i+1] == df_calculation.iloc[i,j+1]:
-#         df_calculation.iloc[j,i+1]= 0
-#         df_calculation.iloc[i,j+1] = 0
-#       elif df_calculation.iloc[j,i+1] > df_calculation.iloc[i,j+1]:
-#         df_calculation.iloc[j,i+1] = df_calculation.iloc[j,i+1] - df_calculation.iloc[i,j+1]
-#         df_calculation.iloc[i,j+1] = 0
-#       else:
-#         df_calculation.iloc[i,j+1] = df_calculation.iloc[i,j+1] - df_calculation.iloc[j,i+1]
-#         df_calculation.iloc[j,i+1] = 0
-#   stacked_df = df_calculation.set_index('PaidBy').stack().reset_index()
-#   filtered_df = stacked_df.loc[stacked_df[0] != 0]
-#   filtered_df.columns = ['Payee', 'Payer', 'Amount']
-#   print("Press 0 to show all split expences or 1 for see indivisual member result : ",end="")
-#   split_member_choice = int(input())
-#   if split_member_choice == 0:
-#     print(filtered_df)
-#   else:
-#     query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+choice+"' ORDER BY ORDINAL_POSITION;"
-#     cursor.execute(query)
-#     results = cursor.fetchall()
-#     clean_lst = [x[0] for x in results[3:]]
-#     print(clean_lst)
-#     member = input("Enter the member name whose expence want to see : ")
-#     print(" Owe to you :-")
-#     filtered_payee_df = filtered_df[filtered_df['Payee'] == member]
-#     if filtered_payee_df.empty:
-#       print("No transcation to show")
-#     else:
-#       print(filtered_payee_df)
-#     print()
-#     print(" Owe by you :-")
-#     filtered_payer_df = filtered_df[filtered_df['Payer'] == member]
-#     if filtered_payer_df.empty:
-#       print("No transcation to show")
-#     else:
-#       print(filtered_payer_df)
+def all_bill_settlement(table_name):
+  df = pd.read_sql('SELECT * FROM '+table_name, con=db)
+  df = df.drop(['Trans_id','Expence_name'],axis=1)
+  column_names = df.columns.tolist()
+  column_names.sort(key=lambda x: x[0])
+  first_column_values = column_names[1:]
+  data = {column_names[0]: first_column_values}
+  df_calculation = pd.DataFrame(data)
+  for i in column_names[1:]:
+    df_calculation[i] = pd.Series(dtype=float)
+  count=1
+  for i in range(1,len(column_names)):
+    df_member = df.groupby('PaidBy')[column_names[i]].sum()
+    for j in range(len(column_names)-1):
+      df_calculation.iloc[j,count]=df_member[j]
+    count+=1
+  for i in range(len(column_names)-1):
+    df_calculation.iloc[i,i+1]=0
+  for i in range(len(column_names)-1):
+    for j in range(1,len(column_names)-1):
+      if df_calculation.iloc[j,i+1] == df_calculation.iloc[i,j+1]:
+        df_calculation.iloc[j,i+1]= 0
+        df_calculation.iloc[i,j+1] = 0
+      elif df_calculation.iloc[j,i+1] > df_calculation.iloc[i,j+1]:
+        df_calculation.iloc[j,i+1] = df_calculation.iloc[j,i+1] - df_calculation.iloc[i,j+1]
+        df_calculation.iloc[i,j+1] = 0
+      else:
+        df_calculation.iloc[i,j+1] = df_calculation.iloc[i,j+1] - df_calculation.iloc[j,i+1]
+        df_calculation.iloc[j,i+1] = 0
+  stacked_df = df_calculation.set_index('PaidBy').stack().reset_index()
+  filtered_df = stacked_df.loc[stacked_df[0] != 0]
+  filtered_df.columns = ['Payee', 'Payer', 'Amount']
+  html_table = filtered_df.to_html()
+  return (html_table)
+  
+
+def individual_bill_settlement(table_name,member_name):
+  df = pd.read_sql('SELECT * FROM '+table_name, con=db)
+  df = df.drop(['Trans_id','Expence_name'],axis=1)
+  column_names = df.columns.tolist()
+  column_names.sort(key=lambda x: x[0])
+  first_column_values = column_names[1:]
+  data = {column_names[0]: first_column_values}
+  df_calculation = pd.DataFrame(data)
+  for i in column_names[1:]:
+    df_calculation[i] = pd.Series(dtype=float)
+  count=1
+  for i in range(1,len(column_names)):
+    df_member = df.groupby('PaidBy')[column_names[i]].sum()
+    for j in range(len(column_names)-1):
+      df_calculation.iloc[j,count]=df_member[j]
+    count+=1
+  for i in range(len(column_names)-1):
+    df_calculation.iloc[i,i+1]=0
+  for i in range(len(column_names)-1):
+    for j in range(1,len(column_names)-1):
+      if df_calculation.iloc[j,i+1] == df_calculation.iloc[i,j+1]:
+        df_calculation.iloc[j,i+1]= 0
+        df_calculation.iloc[i,j+1] = 0
+      elif df_calculation.iloc[j,i+1] > df_calculation.iloc[i,j+1]:
+        df_calculation.iloc[j,i+1] = df_calculation.iloc[j,i+1] - df_calculation.iloc[i,j+1]
+        df_calculation.iloc[i,j+1] = 0
+      else:
+        df_calculation.iloc[i,j+1] = df_calculation.iloc[i,j+1] - df_calculation.iloc[j,i+1]
+        df_calculation.iloc[j,i+1] = 0
+  stacked_df = df_calculation.set_index('PaidBy').stack().reset_index()
+  filtered_df = stacked_df.loc[stacked_df[0] != 0]
+  filtered_df.columns = ['Payee', 'Payer', 'Amount']
+  filtered_payee_df = filtered_df[filtered_df['Payee'] == member_name]
+  filtered_payer_df = filtered_df[filtered_df['Payer'] == member_name]
+  html_table1 = filtered_payee_df.to_html()
+  html_table2 = filtered_payer_df.to_html()
+  return (html_table1,html_table2)
 
   
 

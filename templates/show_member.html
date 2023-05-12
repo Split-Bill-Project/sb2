@@ -78,7 +78,7 @@
                             <p>Enter the amount paid by each member:</p>
                             {% for member in members %}
                               <label for="amount-{{ member[0] }}">{{ member[0] }}:</label>
-                              <input type="number" id="amount-{{ member[0] }}" name="cos_amounts[]" value="0" min="0"><br>
+                              <input type="number" id="amount-{{ member[0] }}" name="cos_amount" value="0" min="0"><br>
                             {% endfor %}
                           </div>
                           

@@ -1,0 +1,17 @@
+from flask import render_template
+
+@app.route('/show_group_split', methods=['GET','POST'])
+def show_group_split():
+    if request.method == 'POST':
+        split_type = request.form['split_type']
+        table_name = request.form['group']
+        member_name = request.form.get('member')
+        
+        if split_type == 'all_split':
+            results = all_bill_settlement(table_name)
+            return render_template('all_split_result.html', result=results)
+        else:
+            results = individual_bill_settlement(table_name, member_name)
+            return render_template('individual_split_result.html', result1=results[0], result2=results[1])
+    
+    return render_template('show_group_split.html')

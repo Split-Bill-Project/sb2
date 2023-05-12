@@ -49,7 +49,7 @@
                   <!--Form Section-->
                   <br /><br />  
                   <h1>Group Names</h1>
-                  <form method="POST" action="/show_member_for_bill_set">
+                  <form method="POST" action="/select_split_choice">
                     {% for group in groups %}
                         <input type="radio" name="group" value="{{ group }}">{{ group[0] }}<br>
                     {% endfor %}
